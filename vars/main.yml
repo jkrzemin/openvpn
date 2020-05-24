@@ -1,2 +1,15 @@
 ---
-# vars file for openvpn
+# Name of openvpn service
+openvpn_service: openvpn
+
+# Packages to install along with openvpn
+openvpn_packages:
+    - openvpn
+    - udev
+    - openssl
+    - zip
+
+# Dictionary structure of supported OS versions
+openvpn_supported_os:
+  Debian:
+    - '9'

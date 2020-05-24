@@ -1,0 +1,20 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: docker.io/geerlingguy/docker-centos7-ansible:latest
+    pre_build_image: true
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
+scenario:
+  name: os-not-supported
+  test_sequence:
+    - destroy
+    - create
+    - converge
+    - destroy

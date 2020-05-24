@@ -1,2 +1,36 @@
 ---
-# defaults file for openvpn
+# Set to 'false' to completely disable the role
+openvpn_enabled: true
+
+# The OpenVPN configuration directory
+openvpn_etcdir: /etc/openvpn
+openvpn_keydir: "{{ openvpn_etcdir }}/keys"
+openvpn_host: "{{ inventory_hostname }}"
+openvpn_ccd: "{{ openvpn_etcdir }}/ccd/"
+
+# User and group for openvpn service
+openvpn_user: nobody
+openvpn_group: nogroup
+openvpn_port: '1194'
+openvpn_proto: udp
+openvpn_cipher: BF-CBC
+openvpn_dev: tun
+openvpn_keepalive: "10 120"
+openvpn_comp_lzo: true
+openvpn_status: openvpn-status.log
+openvpn_max_clients: 100
+openvpn_server: 10.8.0.0 255.255.255.0
+openvpn_bridge: {}
+openvpn_ifconfig_pool_persist: ipp.txt
+openvpn_verb: 3
+openvpn_resolv_retry: infinite
+
+
+# Whether to allow communication among clients via the openvpn server.
+# Communication is still possible via the IP layer.
+openvpn_client_to_client: true
+openvpn_dns_servers: []
+openvpn_route_ranges: []
+
+
+openvpn_log: /var/log/openvpn.log

@@ -1,0 +1,7 @@
+- name: Check if OS is supported
+  assert:
+    that:
+      - "ansible_distribution in openvpn_supported_os"
+      - "ansible_distribution_major_version in openvpn_supported_os[ansible_distribution]"
+    msg: "{{ ansible_distribution }} (version {{ ansible_distribution_major_version }})  is not supported"
+    success_msg: "{{ ansible_distribution }} {{ ansible_distribution_major_version }} is supported"

@@ -1,0 +1,5 @@
+---
+- name: Install requirements
+  apt:
+    name: "{{ openvpn_packages }}"
+    update_cache: true
