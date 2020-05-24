@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: openvpn
   author: Jakub Krzemiński
   description: Role for setting up OpenVPN server.
   license: MIT
