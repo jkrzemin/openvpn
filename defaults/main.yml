@@ -6,7 +6,12 @@ openvpn_enabled: true
 openvpn_etcdir: /etc/openvpn
 openvpn_keydir: "{{ openvpn_etcdir }}/keys"
 openvpn_host: "{{ inventory_hostname }}"
+# The ccd (clients configuration directory). This will contain files with
+# configuration directives that the server will apply per connecting client.
 openvpn_ccd: "{{ openvpn_etcdir }}/ccd/"
+openvpn_log: /var/log/openvpn.log
+openvpn_scripts_dir: "{{ openvpn_etcdir }}/scripts/"
+
 
 # User and group for openvpn service
 openvpn_user: nobody
@@ -32,5 +37,11 @@ openvpn_client_to_client: true
 openvpn_dns_servers: []
 openvpn_route_ranges: []
 
+openvpn_clients: []
+openvpn_clients_revoke: []
+openvpn_client_options: []
+openvpn_ccd_configs: []
 
-openvpn_log: /var/log/openvpn.log
+openvpn_script_output_directories: []
+openvpn_script_files: []
+openvpn_inline_scripts: []

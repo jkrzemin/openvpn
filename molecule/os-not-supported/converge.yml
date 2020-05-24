@@ -17,4 +17,3 @@
             that:
               - expected_failure is defined
               - should_not_run is not defined
-

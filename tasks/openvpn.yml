@@ -2,3 +2,12 @@
 - import_tasks: assertions.yml
 - import_tasks: install.yml
 - import_tasks: configure.yml
+- import_tasks: scripts.yml
+- import_tasks: clients.yml
+
+
+- name: Ensure OpenVPN is started
+  service:
+    name: "{{ openvpn_service }}"
+    state: started
+    enabled: true
