@@ -2,6 +2,6 @@
   assert:
     that:
       - "ansible_distribution in openvpn_supported_os"
-      - "ansible_distribution_major_version in openvpn_supported_os[ansible_distribution]"
+      - "ansible_lsb.major_release in openvpn_supported_os[ansible_distribution]"
     msg: "{{ ansible_distribution }} (version {{ ansible_lsb.major_release }})  is not supported"
     success_msg: "{{ ansible_distribution }} {{ ansible_lsb.major_release }} is supported"
