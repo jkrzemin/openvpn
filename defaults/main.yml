@@ -45,3 +45,4 @@ openvpn_ccd_configs: []
 openvpn_script_output_directories: []
 openvpn_script_files: []
 openvpn_inline_scripts: []
+openvpn_client_conf_template: client.conf.j2
