@@ -30,7 +30,7 @@ openvpn_ifconfig_pool_persist: ipp.txt
 openvpn_verb: 3
 openvpn_resolv_retry: infinite
 
-
+openvpn_unified_client_profiles: false
 # Whether to allow communication among clients via the openvpn server.
 # Communication is still possible via the IP layer.
 openvpn_client_to_client: true
