@@ -9,18 +9,18 @@ client
 # Use the same setting as you are using on the server. On most systems, the VPN
 # will not function unless you partially or fully disable the firewall for the
 # TUN/TAP interface.
-dev {{ openvpn_dev }}
+dev {{ openvpn_client_dev }}
 
 # Are we connecting to a TCP or UDP server?  Use the same setting as on the
 # server.
-proto {{ openvpn_proto }}
+proto {{ openvpn_client_proto }}
 
 # Encrypt packets with cipher algorithm
 cipher {{ openvpn_cipher }}
 
 # The hostname/IP and port of the server. You can have multiple remote entries
 # to load balance between the servers.
-remote {{openvpn_host}} {{openvpn_port}}
+remote {{ openvpn_host }} {{ openvpn_port }}
 
 # Keep trying indefinitely to resolve the host name of the OpenVPN server.
 # Very useful on machines which are not permanently connected to the internet
@@ -47,13 +47,14 @@ persist-tun
 <key>
 {{ openvpn_client_keys_output |default([{'item':client,'stdout':''}])|selectattr('item', 'match', client)|map(attribute='stdout')|list|first }}
 </key>
-{% if openvpn_tls_auth %}
-key-direction 1
-<tls-auth>
-{{ openvpn_tls_auth_file_contents | default('') }}
-</tls-auth>
-{% endif %}
-
+{#
+#{% if openvpn_tls_auth %}
+#key-direction 1
+#<tls-auth>
+#{{ openvpn_tls_auth_file_contents | default('') }}
+#</tls-auth>
+#{% endif %}
+#}
 {% else %}
 ca ca.crt
 cert {{client}}.crt
@@ -69,10 +70,12 @@ key {{client}}.key
 # easy-rsa folder will do this.
 ns-cert-type server
 
-{% if openvpn_tls_auth and not openvpn_unified_client_profiles -%}
-# Use a static pre-shared key (PSK)
-tls-auth {{openvpn_tls_key}} 1
-{% endif %}
+{#
+#{% if openvpn_tls_auth and not openvpn_unified_client_profiles -%}
+## Use a static pre-shared key (PSK)
+#tls-auth {{openvpn_tls_key}} 1
+#{% endif %}
+#}
 
 # Enable compression on the VPN link. Don't enable this unless it is also
 # enabled in the server config file.
@@ -84,11 +87,11 @@ comp-lzo
 
 # Set log file verbosity.
 verb {{openvpn_verb}}
-
-{% if openvpn_use_pam or openvpn_use_ldap %}
-auth-user-pass
-{% endif %}
-
+{#
+#{% if openvpn_use_pam or openvpn_use_ldap %}
+#auth-user-pass
+#{% endif %}
+#}
 {% for option in openvpn_client_options %}
 {{option}}
 {% endfor %}

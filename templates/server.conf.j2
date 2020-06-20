@@ -1,28 +1,8 @@
 # {{ ansible_managed }}
 
-;local a.b.c.d
+local {{ openvpn_address }}
 
-# Which TCP/UDP port should OpenVPN listen on? If you want to run multiple
-# OpenVPN instances on the same machine, use a different port number for each
-# one.  You will need to open up this port on your firewall.
-port {{ openvpn_port }}
-
-# TCP or UDP server?
-proto {{ openvpn_proto }}
-
-# Encrypt packets with cipher algorithm
-cipher {{ openvpn_cipher }}
-
-# "dev tun" will create a routed IP tunnel, "dev tap" will create an ethernet
-# tunnel. Use "dev tap0" if you are ethernet bridging and have precreated a
-# tap0 virtual interface and bridged it with your ethernet interface. If you
-# want to control access policies over the VPN, you must create firewall rules
-# for the the TUN/TAP interface. On non-Windows systems, you can give an
-# explicit unit number, such as tun0. On Windows, use "dev-node" for this. On
-# most systems, the VPN will not function unless you partially or fully disable
-# the firewall for the TUN/TAP interface.
-dev {{ openvpn_dev }}
-
+mode server
 
 # SSL/TLS root certificate (ca), certificate (cert), and private key (key).
 # Each client and the server must have their own cert and key file.  The server
@@ -34,71 +14,66 @@ dev {{ openvpn_dev }}
 #
 # Any X509 key management system can be used. OpenVPN can also use a PKCS #12
 # formatted key file (see "pkcs12" directive in man page).
-ca {{ openvpn_keydir }}/ca.crt
-cert {{ openvpn_keydir }}/issued/server.crt
-key {{ openvpn_keydir }}/private/server.key  # This file should be kept secret
+tls-server
+ca {{ openvpn_ca_crt_path }}
+cert {{ openvpn_crt_path }}
+key {{ openvpn_key_path }}  # This file should be kept secret
 
 # Diffie hellman parameters. Generate your own with: openssl dhparam -out
 # dh1024.pem 1024 Substitute 2048 for 1024 if you are using 2048 bit keys.
-dh {{ openvpn_keydir }}/dh.pem
+dh {{ openvpn_dh_param_path }}
 
 # Client configuration directory.
 {% if openvpn_ccd is defined -%}
 client-config-dir {{ openvpn_ccd }}
 {% endif %}
 
+
+dev {{ openvpn_server_dev }}
+port {{ openvpn_port }}
+
+proto {{ openvpn_server_proto }}
+
 # Which VPN topology to use? (net30, subnet, p2p)
 {% if openvpn_topology is defined -%}
 topology {{ openvpn_topology }}
+push "topology {{ openvpn_topology }}"
 {% endif %}
 
-# The keepalive directive causes ping-like messages to be sent back and forth
-# over the link so that each side knows when the other side has gone down. Ping
-# every 10 seconds, assume that remote peer is down if no ping received during
-# a 120 second time period.
-{%- if openvpn_keepalive != '' %}
-keepalive {{ openvpn_keepalive }}
-{% endif %}
+# Encrypt packets with cipher algorithm
+cipher {{ openvpn_cipher }}
 
-# Enable compression on the VPN link. If you enable it here, you must also
-# enable it in the client config file.
-{% if openvpn_comp_lzo -%}
-comp-lzo
-{% else -%}
-;comp-lzo
-{% endif %}
 
+user {{ openvpn_user }}
+group {{ openvpn_group }}
+
+log-append  {{ openvpn_log }}
 
 # The persist options will try to avoid accessing certain resources on restart
 # that may no longer be accessible because of the privilege downgrade.
 persist-key
 persist-tun
 
-# Output a short status file showing current connections, truncated and
-# rewritten every minute.
+ifconfig {{ openvpn_gateway }}
+ifconfig-pool {{ openvpn_ip_pool }}
+ifconfig-pool-persist ipp.txt
+
+{% if openvpn_keepalive != '' %}
+keepalive {{ openvpn_keepalive }}
+ping-timer-rem
+{% endif %}
+
 status {{ openvpn_status }}
 
-# By default, log messages will go to the syslog (or on Windows, if running as
-# a service, they will go to the "\Program Files\OpenVPN\log" directory). Use
-# log or log-append to override this default. "log" will truncate the log file
-# on OpenVPN startup, while "log-append" will append to it.  Use one or the
-# other (but not both).
-;log         openvpn.log
-log-append  {{ openvpn_log }}
+verb {{ openvpn_verb }}
 
-# The maximum number of concurrently connected clients we want to allow.
-max-clients {{ openvpn_max_clients }}
-
-user {{ openvpn_user }}
-group {{ openvpn_group }}
-
-{% if openvpn_client_to_client %}
-client-to-client
+{% if openvpn_comp_lzo -%}
+comp-lzo
+{% else -%}
+;comp-lzo
 {% endif %}
 
-{% if crl_pem_file.stat.exists %}
-crl-verify {{ openvpn_keydir }}/crl.pem # TODO: DFQ this does?
-{% endif %}
+push "route-gateway {{ openvpn_gateway.split(' ')[0] }}"
 
 {% for dns in openvpn_dns_servers %}
 push "dhcp-option DNS {{ dns }}"
@@ -107,4 +82,3 @@ push "dhcp-option DNS {{ dns }}"
 {% for push_route in openvpn_route_ranges %}
 push "route {{ push_route }}"
 {% endfor %}
-

@@ -4,14 +4,17 @@ openvpn_enabled: true
 
 # The OpenVPN configuration directory
 openvpn_etcdir: /etc/openvpn
-openvpn_keydir: "{{ openvpn_etcdir }}/keys"
-openvpn_host: "{{ inventory_hostname }}"
-# The ccd (clients configuration directory). This will contain files with
-# configuration directives that the server will apply per connecting client.
+openvpn_pki_dir: "{{ openvpn_etcdir }}"
+openvpn_host: "{{ ansible_host }}"
 openvpn_ccd: "{{ openvpn_etcdir }}/ccd/"
-openvpn_log: /var/log/openvpn.log
 openvpn_scripts_dir: "{{ openvpn_etcdir }}/scripts/"
-
+openvpn_crt_dir: "{{ openvpn_pki_dir }}/issued"
+openvpn_key_dir: "{{ openvpn_pki_dir }}/private"
+openvpn_crt_path: "{{ openvpn_crt_dir }}/{{ openvpn_host }}.crt"
+openvpn_key_path: "{{ openvpn_key_dir }}/{{ openvpn_host }}.key"
+openvpn_ca_crt_path: "{{ openvpn_pki_dir }}/ca.crt"
+openvpn_dh_param_path: "{{ openvpn_pki_dir }}/dh.pem"
+openvpn_log: /var/log/openvpn.log
 
 # User and group for openvpn service
 openvpn_user: nobody
@@ -19,11 +22,13 @@ openvpn_group: nogroup
 openvpn_port: '1194'
 openvpn_proto: udp
 openvpn_cipher: BF-CBC
-openvpn_dev: tun
+openvpn_server_dev: tun
+openvpn_client_dev: tun
 openvpn_keepalive: "10 120"
 openvpn_comp_lzo: true
 openvpn_status: openvpn-status.log
-openvpn_max_clients: 100
+openvpn_address: '0.0.0.0'
+openvpn_server_proto: 'tcp-server'
 openvpn_server: 10.8.0.0 255.255.255.0
 openvpn_bridge: {}
 openvpn_ifconfig_pool_persist: ipp.txt
@@ -37,8 +42,6 @@ openvpn_client_to_client: true
 openvpn_dns_servers: []
 openvpn_route_ranges: []
 
-openvpn_clients: []
-openvpn_clients_revoke: []
 openvpn_client_options: []
 openvpn_ccd_configs: []
 
@@ -46,3 +49,8 @@ openvpn_script_output_directories: []
 openvpn_script_files: []
 openvpn_inline_scripts: []
 openvpn_client_conf_template: client.conf.j2
+
+openvpn_output_dev: eth0
+openvpn_download_extract: false
+openvpn_download_clients: []
+openvpn_download_dir: /tmp/

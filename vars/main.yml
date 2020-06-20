@@ -14,3 +14,7 @@ openvpn_supported_os:
   Debian:
     - '9'
     - '10'
+
+
+# Determine protocol for client connection
+openvpn_client_proto: "{{ openvpn_proto  if 'server' not in openvpn_proto else openvpn_proto.replace('server', 'client') }}"
